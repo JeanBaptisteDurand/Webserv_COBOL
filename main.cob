@@ -12,13 +12,17 @@
        77 WS-RECV-STATUS     PIC S9(9) COMP.
        77 WS-SEND-STATUS     PIC S9(9) COMP.
 
-       *> Définition d'une structure contiguë de 16 octets pour sockaddr_in
+       *> Définition d'une structure contiguë de 16 octets pour sockaddr_in (utilisée pour bind)
        01 WS-SOCK-ADDR-STRUCT PIC X(16)
             VALUE 
                 X"0200"      &  *> sin_family : AF_INET en little-endian (0x02 suivi de 0x00)
                 X"1F90"      &  *> sin_port   : 8080 en ordre réseau (2 octets)
                 X"00000000"  &  *> sin_addr   : INADDR_ANY (4 octets)
                 X"0000000000000000".  *> sin_zero   : remplissage (8 octets)
+
+       *> Structure pour l'adresse du client (utilisée par accept)
+       01 WS-CLIENT-ADDR      PIC X(16) VALUE SPACES.
+       77 WS-CLIENT-ADDR-LEN   PIC S9(9) COMP VALUE 16.
 
        *> Buffers pour la réception des requêtes et l'envoi de réponses
        77 WS-BUFFER   PIC X(1024) VALUE SPACES.
@@ -68,11 +72,13 @@
            DISPLAY "Serveur en écoute sur le port 8080".
 
        ACCEPT-LOOP.
+           *> Réinitialiser la longueur de l'adresse du client pour accept
+           MOVE 16 TO WS-CLIENT-ADDR-LEN.
            *> Acceptation d'une connexion entrante
            CALL "accept" USING 
                BY VALUE WS-SOCKET 
-               BY REFERENCE WS-SOCK-ADDR-STRUCT 
-               BY VALUE 16
+               BY REFERENCE WS-CLIENT-ADDR 
+               BY REFERENCE WS-CLIENT-ADDR-LEN
                RETURNING WSNSOCK.
            DISPLAY "Nouvelle socket acceptée : " WSNSOCK.
            IF WSNSOCK < 0

@@ -2,6 +2,9 @@
 
 ### !!! Use COMP-5 to fix little edian problem
 
+check cobweb for comp-5
+https://github.com/majormilan/cobweb
+
 Creation of a basic webserv using cobol
 
 making call to the c/linux function to manage the socket

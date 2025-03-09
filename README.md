@@ -1,5 +1,7 @@
 # Webserv_COBOL
 
+### !!! Use COMP-5 to fix little edian problem
+
 Creation of a basic webserv using cobol
 
 making call to the c/linux function to manage the socket
